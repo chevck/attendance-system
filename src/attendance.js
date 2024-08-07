@@ -1,11 +1,8 @@
 import moment from "moment";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { decode } from "string-encode-decode";
 
 export function MarkAttendance() {
-  const location = useLocation();
-  const { search } = location;
   const params = new URLSearchParams(window.location.search);
 
   useEffect(() => {
@@ -26,7 +23,7 @@ export function MarkAttendance() {
     console.log({ isExpired });
   };
 
-  const handleWriteToExcel = () => {};
+  // const handleWriteToExcel = () => {};
 
   return (
     <div>

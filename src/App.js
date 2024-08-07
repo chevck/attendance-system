@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import QRCode from "react-qr-code";
 import moment from "moment";
 import { useState } from "react";
