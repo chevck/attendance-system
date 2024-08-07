@@ -33,7 +33,7 @@ export function CreateBarCode() {
   };
 
   return (
-    <div className='ccw-attendance-app'>
+    <div className='create-barcode'>
       <h4>Create Barcode Scanner</h4>
       <div>
         <p>When should this barcode expire?</p>

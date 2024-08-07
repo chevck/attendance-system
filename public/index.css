@@ -1,0 +1,137 @@
+body {
+  margin: 0;
+  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; */
+  font-family: "Manrope";
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+input,
+select {
+  border: 1px solid #e7e7e7 !important;
+  height: 40px;
+  border-radius: 8px !important;
+  box-shadow: 0px 2px 2px -1px #0000000a;
+  width: 250px;
+  padding: 16px !important;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 30px;
+  padding: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #25b09b;
+  --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+button.ccw-btn {
+  width: 200px;
+  height: 44px;
+  background: #047857 !important;
+  margin-top: 16px !important;
+  color: white !important;
+  border-radius: 4px !important;
+}
+
+button:disabled {
+  background-color: #e7e7e7 !important;
+}
+
+.ccw-attendance-app {
+  text-align: center;
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  flex-flow: column;
+  justify-content: center;
+}
+
+.ccw-attendance-app .create-barcode h4 {
+  font-size: 24px;
+}
+
+.ccw-attendance-app .create-barcode .react-time-picker {
+  font-size: 24px;
+}
+
+.ccw-attendance-app .create-barcode .btn-create {
+  display: flex;
+  background: green;
+  margin-top: 15px;
+  padding: 12px;
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 40px;
+  width: 150px;
+  height: 48px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ccw-attendance-app .create-barcode .btn-create:disabled {
+  background: gainsboro;
+}
+
+.ccw-attendance-app .ccw-emails h3 {
+  font-size: 24px;
+  font-weight: 600;
+  /* margin-bottom: 8px; */
+}
+
+.ccw-attendance-app .ccw-emails p {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.ccw-attendance-app .ccw-emails input {
+  width: 290px;
+  margin-bottom: 8px;
+}
+
+.ccw-attendance-app .ccw-emails p.add-email-btn {
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.ccw-attendance-app .attendance-container h4 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.ccw-attendance-app .attendance-container h6 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.ccw-attendance-app .attendance-container input {
+  width: 300px;
+}
