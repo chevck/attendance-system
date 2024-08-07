@@ -4,6 +4,7 @@ import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import QRCode from "react-qr-code";
+import { Loader } from "../components/Loader";
 
 export function CreateBarCode() {
   const [expiryTime, setExpiryTime] = useState(moment().format("hh:mm"));
@@ -46,13 +47,7 @@ export function CreateBarCode() {
         className='btn-create'
         onClick={handleCreateBarcode}
       >
-        {loading ? (
-          <div class='spinner-border text-success app-spinner' role='status'>
-            <span class='sr-only'></span>
-          </div>
-        ) : (
-          "Create Barcode"
-        )}
+        {loading ? <Loader /> : "Create Barcode"}
       </button>
       {qrData ? <QRCode value={qrData} /> : null}
     </div>
