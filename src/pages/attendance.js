@@ -10,6 +10,7 @@ export function MarkAttendance() {
   const params = new URLSearchParams(window.location.search);
   const [linkIsExpired, setLinkInExpired] = useState(false);
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export function MarkAttendance() {
     const isExpired = moment().isAfter(decodedExpiryDate);
     setLinkInExpired(isExpired);
     if (isExpired) {
-      toast.error("Attendance has closed for today!");
+      return toast.error("Attendance has closed for today!");
     }
   };
 
@@ -44,8 +45,11 @@ export function MarkAttendance() {
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/attendance/sign`, {
         email,
       });
-      toast.success("Successfully marked your attendance");
-      window.close();
+      toast.success(`Thank you, ${name}`);
+      setLinkInExpired(true);
+      setEmail("");
+      setName("");
+      // window.close();
     } catch (error) {
       toast.error(error?.response?.data || "Error marking attendance");
     } finally {
@@ -57,6 +61,13 @@ export function MarkAttendance() {
     <div className='attendance-container'>
       <h4>Hmm, a CCW Member?</h4>
       <h6>Put your email in, let's see 😏</h6>
+      <input
+        className='form-control'
+        placeholder='Your First Name'
+        onChange={({ target: { value } }) => setName(value)}
+        value={name}
+        disabled={loading || linkIsExpired}
+      />
       <input
         className='form-control'
         placeholder='email@email.com'

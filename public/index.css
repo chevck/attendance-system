@@ -159,4 +159,5 @@ button:disabled {
 
 .ccw-attendance-app .attendance-container input {
   width: 300px;
+  margin-bottom: 10px;
 }
