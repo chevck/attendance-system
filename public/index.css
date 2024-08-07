@@ -78,6 +78,7 @@ button:disabled {
 
 .ccw-attendance-app .create-barcode .react-time-picker {
   font-size: 24px;
+  margin-bottom: 40px;
 }
 
 .ccw-attendance-app .create-barcode .react-time-picker__wrapper {

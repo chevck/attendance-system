@@ -60,6 +60,7 @@ export function CreateBarCode() {
           value={expiryTime}
           disableClock={true}
         />
+        <br />
       </div>
       {qrData ? <QRCode value={qrData} /> : null}
     </div>
