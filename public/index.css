@@ -79,8 +79,21 @@ button:disabled {
   font-size: 24px;
 }
 
+.ccw-attendance-app .create-barcode .react-time-picker__wrapper {
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.ccw-attendance-app .create-barcode .react-time-picker input {
+  height: 13px;
+}
+
+.ccw-attendance-app .create-barcode h4 {
+  /* height: 13px; */
+  font-weight: 700;
+}
+
 .ccw-attendance-app .create-barcode .btn-create {
-  display: flex;
   background: green;
   margin-top: 15px;
   padding: 12px;
@@ -90,9 +103,6 @@ button:disabled {
   width: 150px;
   height: 48px;
   text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .ccw-attendance-app .create-barcode .btn-create:disabled {
