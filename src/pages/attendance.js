@@ -43,7 +43,7 @@ export function MarkAttendance() {
     setLoading(true);
     try {
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/attendance/sign`, {
-        email,
+        email: email.toLowerCase(),
         name,
       });
       toast.success(`Thank you, ${name}`);

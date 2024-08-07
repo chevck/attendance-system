@@ -20,9 +20,8 @@ export const LoadEmails = () => {
       return toast.error("There are invalid emails in your mix");
     setLoading(true);
     try {
-      console.log("sds", process.env);
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/create`, {
-        emails,
+        emails: emails.map((el) => el.toLowerCase()),
       });
       toast.success("Emails created successfully!");
       setEmails([""]);
