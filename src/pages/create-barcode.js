@@ -49,6 +49,7 @@ export function CreateBarCode() {
         <TimePicker
           onChange={(time) => setExpiryTime(time)}
           value={expiryTime}
+          disableClock={true}
         />
       </div>
       <button

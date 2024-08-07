@@ -34,8 +34,8 @@ export const LoadEmails = () => {
   };
 
   const handleAddNewEmailBlank = () => {
-    if (emails.length === 5)
-      return toast.error("You can only create FIVE emails at once");
+    if (emails.length === 10)
+      return toast.error("You can only create TEN emails at once");
     const hasABlankOpening = emails.filter((el) => !el);
     if (hasABlankOpening.length) return toast.error("Fill empty email box");
     const invalidEmails = emails.filter((el) => !validateEmail(el));
@@ -55,7 +55,7 @@ export const LoadEmails = () => {
             placeholder='johndoe@gmail.com'
             className='form-control'
             onChange={({ target: { value } }) => {
-              emails[key] = value;
+              emails[key] = value.trim();
               setEmails([...emails]);
             }}
           />
