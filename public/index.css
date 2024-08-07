@@ -125,6 +125,14 @@ button:disabled {
   margin-bottom: 8px;
 }
 
+.ccw-attendance-app .ccw-emails span.remove {
+  font-size: 12px;
+  color: red;
+  margin-left: 15px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .ccw-attendance-app .ccw-emails p.add-email-btn {
   margin-top: 20px;
   cursor: pointer;

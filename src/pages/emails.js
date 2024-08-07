@@ -2,26 +2,32 @@ import { useState } from "react";
 import { validateEmail } from "../utils/functions";
 import { toast } from "react-toastify";
 import { Loader } from "../components/Loader";
+import axios from "axios";
 
 export const LoadEmails = () => {
   const [emails, setEmails] = useState([""]);
   const [loading, setLoading] = useState(false);
 
-  const handleCreateEmails = () => {
+  const handleCreateEmails = async () => {
     const hasABlankOpening = emails.filter((el) => !el);
     if (hasABlankOpening.length) return toast.error("Fill empty email box");
-    const validEmails = [];
-    emails.forEach((email) => {
+    // eslint-disable-next-line array-callback-return
+    const invalidEmails = emails.filter((email) => {
       const isEmailValid = validateEmail(email);
-      if (!isEmailValid) return toast.error("Invalid Email");
-      validEmails.push(email);
+      if (!isEmailValid) return email;
     });
+    if (invalidEmails.length)
+      return toast.error("There are invalid emails in your mix");
     setLoading(true);
-    console.log({ validEmails });
-
     try {
+      console.log("sds", process.env);
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/create`, {
+        emails,
+      });
+      toast.success("Emails created successfully!");
+      setEmails([""]);
     } catch (error) {
-      toast.error("Error creating email");
+      toast.error(error?.response?.data || "Error creating emails");
     } finally {
       setLoading(false);
     }
@@ -42,16 +48,28 @@ export const LoadEmails = () => {
       <h3>Welcome Admin,</h3>
       <p>Please put in a valid email below</p>
       {emails.map((el, key) => (
-        <input
-          key={key}
-          value={el}
-          placeholder='johndoe@gmail.com'
-          className='form-control'
-          onChange={({ target: { value } }) => {
-            emails[key] = value;
-            setEmails([...emails]);
-          }}
-        />
+        <div>
+          <input
+            key={key}
+            value={el}
+            placeholder='johndoe@gmail.com'
+            className='form-control'
+            onChange={({ target: { value } }) => {
+              emails[key] = value;
+              setEmails([...emails]);
+            }}
+          />
+          <span
+            className='remove'
+            role='button'
+            onClick={() => {
+              emails.splice(key, 1);
+              setEmails([...emails]);
+            }}
+          >
+            Remove
+          </span>
+        </div>
       ))}
       <p
         role='button'

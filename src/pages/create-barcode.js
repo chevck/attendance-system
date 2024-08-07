@@ -10,8 +10,6 @@ export function CreateBarCode() {
   const [qrData, setQrData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  console.log({ expiryTime });
-
   const handleCreateBarcode = () => {
     setLoading(true);
     setInterval(() => {

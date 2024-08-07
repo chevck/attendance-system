@@ -36,6 +36,9 @@ export function MarkAttendance() {
     const isEmailValid = validateEmail(email);
     if (!isEmailValid) return toast.error("Invalid Email");
     setLoading(true);
+    try {
+      console.log("ss", process.env);
+    } catch (error) {}
   };
 
   return (
