@@ -121,6 +121,12 @@ button:disabled {
   margin-bottom: 8px;
 }
 
+.ccw-attendance-app .ccw-emails .input-flex {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .ccw-attendance-app .ccw-emails input {
   width: 290px;
   margin-bottom: 8px;

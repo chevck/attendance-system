@@ -8,6 +8,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <div className='ccw-attendance-app'>
     <Router />
-    <ToastContainer closeOnClick limit={1} />
+    <ToastContainer closeOnClick />
   </div>
 );

@@ -48,7 +48,7 @@ export const LoadEmails = () => {
       <h3>Welcome Admin,</h3>
       <p>Please put in a valid email below</p>
       {emails.map((el, key) => (
-        <div>
+        <div className='input-flex'>
           <input
             key={key}
             value={el}

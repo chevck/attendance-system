@@ -22,15 +22,16 @@ export function MarkAttendance() {
     console.log({ expiryDate });
     const decodedExpiryDate = decode(expiryDate);
     if (!decodedExpiryDate) {
-      // setLinkInExpired(true);
-      return toast.error("Invalid URL");
+      setLinkInExpired(true);
+      toast.error("Invalid URL");
+      return window.close();
     }
     console.log({ decodedExpiryDate, nowDate: moment().format() });
     const isExpired = moment().isAfter(decodedExpiryDate);
     setLinkInExpired(isExpired);
-    if (isExpired) toast.error("Attendance has closed for today!");
-    // if isexpired, close the app
-    console.log({ isExpired });
+    if (isExpired) {
+      toast.error("Attendance has closed for today!");
+    }
   };
 
   const handleMarkAttendance = async () => {
@@ -40,13 +41,13 @@ export function MarkAttendance() {
     if (!isEmailValid) return toast.error("Invalid Email");
     setLoading(true);
     try {
-      console.log("ss", process.env);
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/attendance/sign`,
-        { email }
-      );
-      console.log({ res });
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/attendance/sign`, {
+        email,
+      });
+      toast.success("Successfully marked your attendance");
+      window.close();
     } catch (error) {
+      toast.error(error?.response?.data || "Error marking attendance");
     } finally {
       setLoading(false);
     }
