@@ -60,7 +60,7 @@ export function MarkAttendance() {
   return (
     <div className='attendance-container'>
       <h4>Hmm, a CCW Member?</h4>
-      <h6>Put your email in, let's see 😏</h6>
+      <h6>Put in your email, let's see 😏</h6>
       <input
         className='form-control'
         placeholder='Your First Name'
