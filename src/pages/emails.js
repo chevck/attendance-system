@@ -63,6 +63,8 @@ export const LoadEmails = () => {
             className='remove'
             role='button'
             onClick={() => {
+              if (emails.length < 2)
+                return toast.error("You need to leave one email");
               emails.splice(key, 1);
               setEmails([...emails]);
             }}

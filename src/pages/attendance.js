@@ -4,6 +4,7 @@ import { decode } from "string-encode-decode";
 import { validateEmail } from "../utils/functions";
 import { toast } from "react-toastify";
 import { Loader } from "../components/Loader";
+import axios from "axios";
 
 export function MarkAttendance() {
   const params = new URLSearchParams(window.location.search);
@@ -20,17 +21,19 @@ export function MarkAttendance() {
     const expiryDate = params.get("expiryDate");
     console.log({ expiryDate });
     const decodedExpiryDate = decode(expiryDate);
+    if (!decodedExpiryDate) {
+      // setLinkInExpired(true);
+      return toast.error("Invalid URL");
+    }
     console.log({ decodedExpiryDate, nowDate: moment().format() });
     const isExpired = moment().isAfter(decodedExpiryDate);
     setLinkInExpired(isExpired);
     if (isExpired) toast.error("Attendance has closed for today!");
     // if isexpired, close the app
-    // if (!isExpired) window.alert("is not expired");
-    //     window.alert("is expired", isExpired);
     console.log({ isExpired });
   };
 
-  const handleMarkAttendance = () => {
+  const handleMarkAttendance = async () => {
     if (linkIsExpired)
       return toast.error("You are a believer, why you wan cheat?");
     const isEmailValid = validateEmail(email);
@@ -38,7 +41,15 @@ export function MarkAttendance() {
     setLoading(true);
     try {
       console.log("ss", process.env);
-    } catch (error) {}
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/attendance/sign`,
+        { email }
+      );
+      console.log({ res });
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

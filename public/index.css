@@ -21,6 +21,7 @@ select {
   box-shadow: 0px 2px 2px -1px #0000000a;
   width: 250px;
   padding: 16px !important;
+  display: block;
 }
 
 /* HTML: <div class="loader"></div> */
