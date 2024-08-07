@@ -44,6 +44,7 @@ export function MarkAttendance() {
     try {
       await axios.post(`${process.env.REACT_APP_BACKEND_URL}/attendance/sign`, {
         email,
+        name,
       });
       toast.success(`Thank you, ${name}`);
       setLinkInExpired(true);
