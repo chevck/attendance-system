@@ -45,6 +45,15 @@ export function CreateBarCode() {
       <h4>Create Barcode Scanner</h4>
       <div>
         <p>When should this barcode expire?</p>
+
+        <br />
+        <button
+          disabled={loading}
+          className='btn-create'
+          onClick={handleCreateBarcode}
+        >
+          {loading ? <Loader /> : "Create Barcode"}
+        </button>
         <br />
         <TimePicker
           onChange={(time) => setExpiryTime(time)}
@@ -52,13 +61,6 @@ export function CreateBarCode() {
           disableClock={true}
         />
       </div>
-      <button
-        disabled={loading}
-        className='btn-create'
-        onClick={handleCreateBarcode}
-      >
-        {loading ? <Loader /> : "Create Barcode"}
-      </button>
       {qrData ? <QRCode value={qrData} /> : null}
     </div>
   );
