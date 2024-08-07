@@ -22,7 +22,7 @@ export function CreateBarCode() {
         })
         .toISOString();
       const doc = {
-        url: "http://192.168.0.106:3002/mark-attendance",
+        url: `${process.env.REACT_APP_ROOT_URL}/mark-attendance`,
         expiryDate,
       };
       setQrData(JSON.stringify(doc));
