@@ -28,7 +28,6 @@ export function CreateBarCode() {
         expiryDate,
       };
       setQrData(JSON.stringify(doc));
-      console.log({ doc });
       setLoading(false);
     }, 4000);
   };
