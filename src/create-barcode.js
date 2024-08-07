@@ -8,38 +8,55 @@ import QRCode from "react-qr-code";
 export function CreateBarCode() {
   const [expiryTime, setExpiryTime] = useState(moment().format("hh:mm"));
   const [qrData, setQrData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   console.log({ expiryTime });
 
   const handleCreateBarcode = () => {
-    const expiryDate = moment()
-      .set({
-        hour: expiryTime.split(":")[0],
-        minute: expiryTime.split(":")[1],
-        millisecond: 0,
-        second: 0,
-      })
-      .toISOString();
-    const doc = {
-      url: "http://192.168.0.106:3002/mark-attendance",
-      expiryDate,
-    };
-    setQrData(JSON.stringify(doc));
-    console.log({ doc });
+    setLoading(true);
+    setInterval(() => {
+      const expiryDate = moment()
+        .set({
+          hour: expiryTime.split(":")[0],
+          minute: expiryTime.split(":")[1],
+          millisecond: 0,
+          second: 0,
+        })
+        .toISOString();
+      const doc = {
+        url: "http://192.168.0.106:3002/mark-attendance",
+        expiryDate,
+      };
+      setQrData(JSON.stringify(doc));
+      console.log({ doc });
+      setLoading(false);
+    }, 4000);
   };
 
   return (
-    <div>
+    <div className='ccw-attendance-app'>
       <h4>Create Barcode Scanner</h4>
       <div>
-        <label>When should this barcode expire?</label>
+        <p>When should this barcode expire?</p>
         <br />
         <TimePicker
           onChange={(time) => setExpiryTime(time)}
           value={expiryTime}
         />
       </div>
-      <button onClick={handleCreateBarcode}>Create Barcode</button>
+      <button
+        disabled={loading}
+        className='btn-create'
+        onClick={handleCreateBarcode}
+      >
+        {loading ? (
+          <div class='spinner-border text-success app-spinner' role='status'>
+            <span class='sr-only'></span>
+          </div>
+        ) : (
+          "Create Barcode"
+        )}
+      </button>
       {qrData ? <QRCode value={qrData} /> : null}
     </div>
   );
