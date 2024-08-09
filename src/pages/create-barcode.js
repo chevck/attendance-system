@@ -7,17 +7,18 @@ import QRCode from "react-qr-code";
 import { Loader } from "../components/Loader";
 import { encode } from "string-encode-decode";
 import { CalendarIcon } from "../assets/CalendarIcon";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export function CreateBarCode() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [qrData, setQrData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [seargentcode, setSeargentCode] = useState("");
 
   useEffect(() => {
     setQrData(null);
   }, [selectedDate]);
-
-  console.log({ selectedDate });
 
   const handleCreateBarcode = () => {
     setLoading(true);
@@ -36,18 +37,28 @@ export function CreateBarCode() {
     }, 4000);
   };
 
+  const handleVerifyBarCodeCreator = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/verify?seargentcode=${seargentcode}`
+      );
+      toast.success(data);
+      handleCreateBarcode();
+    } catch (error) {
+      console.log({ error });
+      toast.error(error?.response?.data || "Error verifying you seargent 🫡");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className='create-barcode'>
       <h4>Create Barcode Scanner</h4>
       <div>
         <p>When should this barcode expire?</p>
         <br />
-        {/* <TimePicker
-          onChange={(time) => setExpiryTime(time)}
-          value={expiryTime}
-          disableClock={true}
-          amPmAriaLabel='PM'
-        /> */}
         <div className='date-picker-container'>
           <DatePicker
             selected={selectedDate}
@@ -59,13 +70,26 @@ export function CreateBarCode() {
             toggleCalendarOnIconClick
             icon={<CalendarIcon />}
             showTimeInput
+            timeInputLabel='Time:'
           />
         </div>
+        <br />
+        <center>
+          <input
+            className='create-barcode-input'
+            placeholder='Seargent Code'
+            value={seargentcode}
+            onChange={({ target: { value } }) => setSeargentCode(value)}
+          />
+        </center>
         <div>
           <button
-            disabled={loading || !selectedDate}
+            disabled={
+              loading ||
+              !(selectedDate && seargentcode && seargentcode.length === 4)
+            }
             className='btn-create'
-            onClick={handleCreateBarcode}
+            onClick={handleVerifyBarCodeCreator}
           >
             {loading ? <Loader /> : "Create Barcode"}
           </button>
