@@ -208,6 +208,10 @@ button:disabled {
   position: relative; */
 }
 
+.react-datepicker__month-container {
+  width: 100%;
+}
+
 .ccw-attendance-app .date-picker-container svg {
   position: absolute;
   right: 20px;

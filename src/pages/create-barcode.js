@@ -55,6 +55,7 @@ export function CreateBarCode() {
             dateFormat='hh:mm a'
             placeholderText='Pick time'
             showIcon
+            includeDates={[new Date()]}
             toggleCalendarOnIconClick
             icon={<CalendarIcon />}
             showTimeInput
