@@ -82,12 +82,23 @@ button:disabled {
 }
 
 .ccw-attendance-app .create-barcode .react-time-picker__wrapper {
-  padding: 10px;
-  border-radius: 8px;
+  /* padding: 10px;
+  border-radius: 8px; */
+  border: none;
+}
+
+.ccw-attendance-app
+  .create-barcode
+  .react-time-picker__wrapper
+  .react-time-picker__inputGroup {
+  display: flex;
+  gap: 10px;
 }
 
 .ccw-attendance-app .create-barcode .react-time-picker input {
-  height: 13px;
+  width: 60px !important;
+  padding: 0 !important;
+  text-align: center;
 }
 
 .ccw-attendance-app .create-barcode h4 {
