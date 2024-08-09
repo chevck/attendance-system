@@ -1,32 +1,28 @@
 import moment from "moment";
 import { useEffect, useState } from "react";
-import TimePicker from "react-time-picker";
+import DatePicker from "react-datepicker";
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
 import QRCode from "react-qr-code";
 import { Loader } from "../components/Loader";
 import { encode } from "string-encode-decode";
+import { CalendarIcon } from "../assets/CalendarIcon";
 
 export function CreateBarCode() {
-  const [expiryTime, setExpiryTime] = useState(moment().format("hh:mm"));
+  const [selectedDate, setSelectedDate] = useState(null);
   const [qrData, setQrData] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setQrData(null);
-  }, [expiryTime]);
+  }, [selectedDate]);
+
+  console.log({ selectedDate });
 
   const handleCreateBarcode = () => {
     setLoading(true);
     setInterval(() => {
-      const expiryDate = moment()
-        .set({
-          hour: expiryTime.split(":")[0],
-          minute: expiryTime.split(":")[1],
-          millisecond: 0,
-          second: 0,
-        })
-        .toISOString();
+      const expiryDate = moment(selectedDate).toISOString();
       const encodedDate = encode(expiryDate);
       const stringDate = new URLSearchParams({
         expiryDate: encodedDate,
@@ -46,28 +42,27 @@ export function CreateBarCode() {
       <div>
         <p>When should this barcode expire?</p>
         <br />
-        <TimePicker
+        {/* <TimePicker
           onChange={(time) => setExpiryTime(time)}
           value={expiryTime}
           disableClock={true}
           amPmAriaLabel='PM'
-        />
-        {/* <div className='date-picker-container'>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat='MMM d'
-              placeholderText='Filter attendance'
-              showIcon
-              toggleCalendarOnIconClick
-              closeOnScroll
-              icon={<CalendarIcon />}
-              maxDate={new Date()}
-            />
-          </div> */}
+        /> */}
+        <div className='date-picker-container'>
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            dateFormat='hh:mm a'
+            placeholderText='Pick time'
+            showIcon
+            toggleCalendarOnIconClick
+            icon={<CalendarIcon />}
+            showTimeInput
+          />
+        </div>
         <div>
           <button
-            disabled={loading}
+            disabled={loading || !selectedDate}
             className='btn-create'
             onClick={handleCreateBarcode}
           >

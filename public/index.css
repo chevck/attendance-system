@@ -202,19 +202,19 @@ button:disabled {
   align-items: end;
 }
 
-.ccw-attendance-app .repository .header .date-picker-container {
-  display: flex;
+.ccw-attendance-app .date-picker-container {
+  /* display: flex;
   align-items: center;
-  position: relative;
+  position: relative; */
 }
 
-.ccw-attendance-app .repository .header .date-picker-container svg {
+.ccw-attendance-app .date-picker-container svg {
   position: absolute;
   right: 20px;
   top: 15px;
 }
 
-.ccw-attendance-app .repository .header .date-picker-container input {
+.ccw-attendance-app .date-picker-container input {
   height: 48px;
   border-radius: 0 !important;
   width: 200px !important;

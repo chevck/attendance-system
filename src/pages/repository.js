@@ -164,8 +164,8 @@ export function Repository() {
               placeholderText='Filter attendance'
               showIcon
               toggleCalendarOnIconClick
-              closeOnScroll
               icon={<CalendarIcon />}
+              popperPlacement='bottom'
               maxDate={new Date()}
             />
           </div>
