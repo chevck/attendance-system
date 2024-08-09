@@ -52,6 +52,19 @@ export function CreateBarCode() {
           disableClock={true}
           amPmAriaLabel='PM'
         />
+        {/* <div className='date-picker-container'>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat='MMM d'
+              placeholderText='Filter attendance'
+              showIcon
+              toggleCalendarOnIconClick
+              closeOnScroll
+              icon={<CalendarIcon />}
+              maxDate={new Date()}
+            />
+          </div> */}
         <div>
           <button
             disabled={loading}

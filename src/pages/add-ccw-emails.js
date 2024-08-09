@@ -47,7 +47,7 @@ export const LoadEmails = () => {
       <h3>Welcome Admin,</h3>
       <p>Please put in a valid email below</p>
       {emails.map((el, key) => (
-        <div className='input-flex'>
+        <div className='input-flex' key={key}>
           <input
             key={key}
             value={el}
@@ -86,6 +86,9 @@ export const LoadEmails = () => {
       >
         {loading ? <Loader /> : "Create Emails"}
       </button>
+      <a href='/repository' className='see-email-repo'>
+        See Email Repository
+      </a>
     </div>
   );
 };

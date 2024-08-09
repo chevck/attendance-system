@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { CreateBarCode } from "./pages/create-barcode";
 import { MarkAttendance } from "./pages/attendance";
 import App from "./App";
-import { LoadEmails } from "./pages/emails";
+import { LoadEmails } from "./pages/add-ccw-emails";
 import { Repository } from "./pages/repository";
 
 function Router() {
