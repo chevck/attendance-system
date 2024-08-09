@@ -96,7 +96,7 @@ button:disabled {
 }
 
 .ccw-attendance-app .create-barcode .react-time-picker input {
-  width: 60px !important;
+  width: 100px !important;
   padding: 0 !important;
   text-align: center;
 }

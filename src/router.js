@@ -3,6 +3,7 @@ import { CreateBarCode } from "./pages/create-barcode";
 import { MarkAttendance } from "./pages/attendance";
 import App from "./App";
 import { LoadEmails } from "./pages/emails";
+import { Repository } from "./pages/repository";
 
 function Router() {
   return (
@@ -11,6 +12,7 @@ function Router() {
         <Route path='/mark-attendance' element={<MarkAttendance />} />
         <Route path='/' element={<CreateBarCode />} />
         <Route path='/create-emails' element={<LoadEmails />} />
+        <Route path='/repository' element={<Repository />} />
         <Route path='/test' element={<App />} />
       </Routes>
     </BrowserRouter>
