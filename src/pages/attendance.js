@@ -25,7 +25,7 @@ export function MarkAttendance() {
     if (!decodedExpiryDate) {
       setLinkInExpired(true);
       toast.error("Invalid URL");
-      // return window.close();
+      return window.close();
     }
     console.log({ decodedExpiryDate, nowDate: moment().format() });
     const isExpired = moment().isAfter(decodedExpiryDate);
