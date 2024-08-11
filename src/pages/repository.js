@@ -14,7 +14,7 @@ export function Repository() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [allEmails, setAllEmails] = useState([]);
   const [downloading, setDownloading] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [attendants, setAttendants] = useState([]);
   const navigate = useNavigate();
 

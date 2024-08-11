@@ -191,6 +191,7 @@ button:disabled {
   font-size: 18px;
   font-weight: 500;
   margin-bottom: 16px;
+  padding: 6px 25px;
 }
 
 .ccw-attendance-app .attendance-container input {

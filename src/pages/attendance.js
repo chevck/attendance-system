@@ -25,7 +25,7 @@ export function MarkAttendance() {
     if (!decodedExpiryDate) {
       setLinkInExpired(true);
       toast.error("Invalid URL");
-      return window.close();
+      // return window.close();
     }
     console.log({ decodedExpiryDate, nowDate: moment().format() });
     const isExpired = moment().isAfter(decodedExpiryDate);
@@ -60,8 +60,8 @@ export function MarkAttendance() {
 
   return (
     <div className='attendance-container'>
-      <h4>Hmm, a CCW Member?</h4>
-      <h6>Put in your email, let's see 😏</h6>
+      <h4>This is your Daily Attendance!</h4>
+      <h6>Put in your email, we'd confirm and mark your attendance</h6>
       <input
         className='form-control'
         placeholder='Your First Name'
