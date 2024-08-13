@@ -72,6 +72,18 @@ button:disabled {
   justify-content: center; */
 }
 
+.ccw-attendance-app .custom-password-input {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: fit-content;
+}
+
+.ccw-attendance-app .custom-password-input span {
+  position: absolute;
+  right: 15px;
+}
+
 .ccw-attendance-app .create-barcode,
 .ccw-attendance-app .ccw-emails,
 .ccw-attendance-app .attendance-container {
@@ -133,10 +145,23 @@ button:disabled {
   background: gainsboro;
 }
 
+.ccw-attendance-app .create-barcode .password-input {
+  display: flex;
+  position: relative;
+  justify-content: center;
+}
+
 .ccw-attendance-app .create-barcode input.create-barcode-input {
   width: 200px;
   border-radius: 0 !important;
   height: 48px;
+}
+
+.ccw-attendance-app .create-barcode .password-input span {
+  position: absolute;
+  top: 13px;
+  right: 35px;
+  cursor: pointer;
 }
 
 .ccw-attendance-app .ccw-emails h3 {
@@ -260,6 +285,11 @@ button:disabled {
   gap: 5px;
 }
 
+.ccw-attendance-app .repository .header .filters input {
+  height: 48px;
+  border-radius: 0;
+}
+
 .ccw-attendance-app .repository .filters-info {
   display: flex;
   gap: 16px;
@@ -309,6 +339,10 @@ button:disabled {
   width: 100%;
 }
 
+.ccw-attendance-app .repository ._custom-table table tbody tr td.actions span {
+  display: none;
+}
+
 .ccw-attendance-app
   .repository
   ._custom-table
@@ -343,6 +377,27 @@ button:disabled {
   svg {
   display: inline;
   margin-right: 5px;
+}
+
+.ccw-attendance-app .repository .modal .modal-body label {
+  margin-bottom: 5px;
+}
+
+.ccw-attendance-app .repository .modal .modal-body label i {
+  color: gray;
+}
+
+.ccw-attendance-app .repository .modal .modal-footer button {
+  border-radius: 0px;
+  border: none;
+}
+
+.ccw-attendance-app .repository .modal .modal-footer button.close {
+  background-color: red;
+}
+
+.ccw-attendance-app .repository .modal .modal-footer button.save {
+  background-color: green;
 }
 
 @media screen and (max-width: 767px) {
@@ -380,6 +435,32 @@ button:disabled {
     tr
     td.actions
     button {
-    padding: 0px 10px;
+    display: none;
+  }
+
+  .ccw-attendance-app
+    .repository
+    ._custom-table
+    table
+    tbody
+    tr
+    td.actions
+    span {
+    display: block;
+    font-size: 18px;
+    margin-top: 14px;
+    margin-right: 26px;
+    cursor: pointer;
+  }
+
+  .ccw-attendance-app
+    .repository
+    ._custom-table
+    table
+    tbody
+    tr
+    td.actions
+    span:nth-child(2) {
+    margin-right: 0;
   }
 }

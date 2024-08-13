@@ -15,6 +15,7 @@ export function CreateBarCode() {
   const [qrData, setQrData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [seargentcode, setSeargentCode] = useState("");
+  const [seeCode, setSeeCode] = useState(false);
 
   useEffect(() => {
     setQrData(null);
@@ -75,12 +76,23 @@ export function CreateBarCode() {
         </div>
         <br />
         <center>
-          <input
-            className='create-barcode-input'
-            placeholder='Seargent Code'
-            value={seargentcode}
-            onChange={({ target: { value } }) => setSeargentCode(value)}
-          />
+          <div className='password-input'>
+            <input
+              className='create-barcode-input'
+              placeholder='Seargent Code'
+              maxLength={4}
+              value={seargentcode}
+              type={seeCode ? "text" : "password"}
+              onChange={({ target: { value } }) => setSeargentCode(value)}
+            />
+            <span onClick={() => setSeeCode(!seeCode)}>
+              {seeCode ? (
+                <i class='bi bi-eye-slash'></i>
+              ) : (
+                <i class='bi bi-eye'></i>
+              )}
+            </span>
+          </div>
         </center>
         <div>
           <button

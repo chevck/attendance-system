@@ -9,13 +9,79 @@ import FileDownload from "js-file-download";
 import { toast } from "react-toastify";
 import { Loader } from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import { validateEmail } from "../utils/functions";
+
+const PasswordInput = ({ setSeargentCode, seargentCode }) => {
+  const [seeCode, setSeeCode] = useState(false);
+  return (
+    <div className='custom-password-input'>
+      <input
+        placeholder='Seargent Code'
+        onChange={({ target: { value } }) => setSeargentCode(value)}
+        value={seargentCode}
+        maxLength={4}
+        type={seeCode ? "text" : "password"}
+      />
+      <span onClick={() => setSeeCode(!seeCode)}>
+        {seeCode ? <i class='bi bi-eye-slash'></i> : <i class='bi bi-eye'></i>}
+      </span>
+    </div>
+  );
+};
+
+const EmailTable = ({ el, key, setSelectedDataToUpdate }) => {
+  return (
+    <tr key={key}>
+      <td colSpan={3}>{el.email.toLowerCase()}</td>
+      <td className='actions'>
+        <span
+          role='button'
+          data-bs-toggle='modal'
+          data-bs-target='#updateEmailModal'
+          onClick={() => setSelectedDataToUpdate({ ...el, newEmail: el.email })}
+        >
+          <i class='bi bi-pencil-square'></i>
+        </span>
+        <span
+          role='button'
+          data-bs-toggle='modal'
+          data-bs-target='#deleteEmailModal'
+          onClick={() => setSelectedDataToUpdate(el)}
+        >
+          <i class='bi bi-trash3-fill'></i>
+        </span>
+        <button
+          data-bs-toggle='modal'
+          data-bs-target='#updateEmailModal'
+          onClick={() => setSelectedDataToUpdate({ ...el, newEmail: el.email })}
+        >
+          Update Email
+        </button>
+        <button
+          data-bs-toggle='modal'
+          data-bs-target='#deleteEmailModal'
+          onClick={() => setSelectedDataToUpdate(el)}
+        >
+          <CancelIcon />
+          Remove User
+        </button>
+      </td>
+    </tr>
+  );
+};
 
 export function Repository() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [allEmails, setAllEmails] = useState([]);
   const [downloading, setDownloading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [searchEmailText, setSearchEmailText] = useState("");
+  const [searchEmailResults, setSearchEmailResults] = useState([]);
   const [attendants, setAttendants] = useState([]);
+  const [selectedDataToUpdate, setSelectedDataToUpdate] = useState(null);
+  const [seargentCode, setSeargentCode] = useState("");
+  const [emailToDelete, setEmailToDelete] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +90,12 @@ export function Repository() {
 
   useEffect(() => {
     if (selectedDate) handleGetAttendees();
+    setSearchEmailText("");
   }, [selectedDate]);
+
+  useEffect(() => {
+    handleSearchEmail();
+  }, [searchEmailText]);
 
   const handleGetAllCCWMails = async () => {
     try {
@@ -34,6 +105,8 @@ export function Repository() {
       setAllEmails(data);
     } catch (error) {
       toast.error(error?.response?.data || "Error getting ccw emails");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,6 +165,85 @@ export function Repository() {
       toast.error(error?.response?.data || "Error downloading emails");
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleSearchEmail = () => {
+    if (!searchEmailText.length) return;
+    const results = allEmails.filter((obj) =>
+      obj.email.toLowerCase().includes(searchEmailText.toLowerCase())
+    );
+    setSearchEmailResults([...results]);
+  };
+
+  const handleUpdateEmail = async () => {
+    if (!seargentCode)
+      return toast.error("You need to give us your code, seargent 😏");
+    const { newEmail, email } = selectedDataToUpdate;
+    if (newEmail === email)
+      return toast.error("The new email and the former email are the same!");
+    const isEmailValid = validateEmail(newEmail);
+    if (!isEmailValid) return toast.error("Invalid Email");
+    try {
+      setActionLoading(true);
+      await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/verify?seargentcode=${seargentCode}`
+      );
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/users`,
+        {
+          ...selectedDataToUpdate,
+        }
+      );
+      const emailIndex = allEmails.findIndex(
+        (email) => String(email._id) === String(data._id)
+      );
+      allEmails[emailIndex] = { ...allEmails[emailIndex], email: data.email };
+      setAllEmails([...allEmails]);
+      if (searchEmailResults.length) setSearchEmailText("");
+      document.getElementById("update-email-close-modal").click();
+      toast.success("Email updated successfully!");
+      setSelectedDataToUpdate(null);
+      setSeargentCode("");
+    } catch (error) {
+      return toast.error(
+        error?.response?.data || "Error updating email. Please try again later"
+      );
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteEmail = async () => {
+    if (emailToDelete !== selectedDataToUpdate?.email)
+      return toast.error("Invalid Email provided!");
+    try {
+      setActionLoading(true);
+      await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/verify?seargentcode=${seargentCode}`
+      );
+      await axios.delete(
+        `${process.env.REACT_APP_BACKEND_URL}/users?email=${emailToDelete}`
+      );
+      const emails = allEmails.filter(
+        (el) => el.email.toLowerCase() !== emailToDelete.toLowerCase()
+      );
+      setAllEmails([...emails]);
+      if (searchEmailResults.length) {
+        setSearchEmailResults([
+          ...searchEmailResults.filter(
+            (el) => el.email.toLowerCase() !== emailToDelete.toLowerCase()
+          ),
+        ]);
+      }
+      toast.success("Email deleted successfully!");
+      setSelectedDataToUpdate(null);
+      setSeargentCode("");
+      document.getElementById("delete-email-close-modal").click();
+    } catch (error) {
+      toast.error(error?.response?.data || "Error deleting user");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -169,6 +321,14 @@ export function Repository() {
               maxDate={new Date()}
             />
           </div>
+          {!selectedDate ? (
+            <input
+              className=''
+              placeholder='Search Email'
+              onChange={({ target: { value } }) => setSearchEmailText(value)}
+              value={searchEmailText}
+            />
+          ) : null}
         </div>
       </div>
       {selectedDate ? (
@@ -212,22 +372,176 @@ export function Repository() {
               <th colSpan={3}></th>
             </thead>
             <tbody>
-              {allEmails.map((el, key) => (
-                <tr key={key}>
-                  <td colSpan={3}>{el.email.toLowerCase()}</td>
-                  <td className='actions'>
-                    <button>Update Email</button>
-                    <button>
-                      <CancelIcon />
-                      Remove User
-                    </button>
-                  </td>
+              {loading ? (
+                <tr>
+                  <td>Loading... Please wait</td>
                 </tr>
-              ))}
+              ) : !allEmails.length && !loading ? (
+                <tr>
+                  <td>No CCW Emails</td>
+                </tr>
+              ) : searchEmailText.length ? (
+                searchEmailResults.length ? (
+                  searchEmailResults.map((el, key) => (
+                    <EmailTable
+                      el={el}
+                      key={key}
+                      setSelectedDataToUpdate={setSelectedDataToUpdate}
+                    />
+                  ))
+                ) : (
+                  <tr>
+                    <td>No Emails matching your search term</td>
+                  </tr>
+                )
+              ) : (
+                allEmails.map((el, key) => (
+                  <EmailTable
+                    el={el}
+                    key={key}
+                    setSelectedDataToUpdate={setSelectedDataToUpdate}
+                  />
+                ))
+              )}
             </tbody>
           </table>
         </div>
       )}
+
+      {/* Update User Modal Begins */}
+      <div
+        class='modal fade'
+        id='updateEmailModal'
+        tabindex='-1'
+        aria-labelledby='exampleModalLabel'
+        aria-hidden='true'
+      >
+        <div class='modal-dialog'>
+          <div class='modal-content'>
+            <div class='modal-header'>
+              <h1 class='modal-title fs-5' id='exampleModalLabel'>
+                Update User Email
+              </h1>
+              <button
+                type='button'
+                class='btn-close'
+                data-bs-dismiss='modal'
+                id='update-email-close-modal'
+                aria-label='Close'
+              ></button>
+            </div>
+            <div class='modal-body'>
+              <label>Email Address</label>
+              <input
+                value={selectedDataToUpdate?.newEmail}
+                onChange={({ target: { value } }) =>
+                  setSelectedDataToUpdate({
+                    ...selectedDataToUpdate,
+                    newEmail: value,
+                  })
+                }
+              />
+              <br />
+              <label>
+                <i>
+                  To complete this action, you need to provide your seargent
+                  code below
+                </i>
+              </label>
+              <PasswordInput
+                seargentCode={seargentCode}
+                setSeargentCode={setSeargentCode}
+              />
+            </div>
+            <div class='modal-footer'>
+              <button
+                type='button'
+                className='btn btn-secondary close'
+                data-bs-dismiss='modal'
+              >
+                Close
+              </button>
+              <button
+                type='button'
+                className='btn btn-primary save'
+                disabled={seargentCode.length !== 4 || actionLoading}
+                onClick={handleUpdateEmail}
+              >
+                {actionLoading ? <Loader /> : "Save changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Update User Modal Ednds */}
+
+      {/* Delete User Modal Begins */}
+      <div
+        class='modal fade'
+        id='deleteEmailModal'
+        tabindex='-1'
+        aria-labelledby='exampleModalLabel'
+        aria-hidden='true'
+      >
+        <div class='modal-dialog'>
+          <div class='modal-content'>
+            <div class='modal-header'>
+              <h1 class='modal-title fs-5' id='exampleModalLabel'>
+                Delete User Email
+              </h1>
+              <button
+                type='button'
+                class='btn-close'
+                data-bs-dismiss='modal'
+                id='delete-email-close-modal'
+                aria-label='Close'
+                onClick={() => {
+                  setSeargentCode("");
+                  setSelectedDataToUpdate(null);
+                  setEmailToDelete("");
+                }}
+              ></button>
+            </div>
+            <div class='modal-body'>
+              <label>
+                To confirm this action, input the email{" "}
+                <b>{selectedDataToUpdate?.email}</b> in the box
+              </label>
+              <input
+                value={emailToDelete}
+                onChange={({ target: { value } }) => setEmailToDelete(value)}
+                placeholder='Email to delete'
+              />
+              <br />
+              <label>
+                <i>Put your unique code below, Seargent 🫡</i>
+              </label>
+              <PasswordInput
+                seargentCode={seargentCode}
+                setSeargentCode={setSeargentCode}
+              />
+            </div>
+            <div class='modal-footer'>
+              <button
+                type='button'
+                className='btn btn-secondary close'
+                data-bs-dismiss='modal'
+              >
+                Close
+              </button>
+              <button
+                type='button'
+                className='btn btn-primary save'
+                disabled={seargentCode.length !== 4 || actionLoading}
+                onClick={handleDeleteEmail}
+              >
+                {actionLoading ? <Loader /> : "Delete User"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Delete User Modal Ednds */}
     </div>
   );
 }
