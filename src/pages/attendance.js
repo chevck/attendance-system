@@ -46,7 +46,7 @@ export function MarkAttendance() {
         email: email.toLowerCase(),
         name,
       });
-      toast.success(`Thank you, ${name}`);
+      toast.success(`You are doing well 👏🏽, ${name}`);
       setLinkInExpired(true);
       setEmail("");
       setName("");
@@ -60,8 +60,8 @@ export function MarkAttendance() {
 
   return (
     <div className='attendance-container'>
-      <h4>This is your Daily Attendance!</h4>
-      <h6>Put in your email, we'd confirm and mark your attendance</h6>
+      <h4>So glad you made it! 🤗</h4>
+      <h6>Let's get it recorded, shall we?</h6>
       <input
         className='form-control'
         placeholder='Your First Name'
