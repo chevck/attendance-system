@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 export function CreateBarCode() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [qrData, setQrData] = useState(null);
+  const [attendanceUrl, setAttendanceUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [seargentcode, setSeargentCode] = useState("");
   const [seeCode, setSeeCode] = useState(false);
@@ -29,10 +30,12 @@ export function CreateBarCode() {
       const stringDate = new URLSearchParams({
         expiryDate: encodedDate,
       }).toString();
+      const attendanceUrl = `${process.env.REACT_APP_ROOT_URL}/mark-attendance?${stringDate}`;
       const doc = {
-        url: `${process.env.REACT_APP_ROOT_URL}/mark-attendance?${stringDate}`,
+        url: attendanceUrl,
         expiryDate,
       };
+      setAttendanceUrl(attendanceUrl);
       setQrData(JSON.stringify(doc));
       setLoading(false);
     }, 4000);
@@ -52,6 +55,11 @@ export function CreateBarCode() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const copyUrl = async () => {
+    await navigator.clipboard.writeText(attendanceUrl);
+    toast.success("copied url!");
   };
 
   return (
@@ -107,7 +115,14 @@ export function CreateBarCode() {
           </button>
         </div>
       </div>
-      {qrData ? <QRCode value={qrData} /> : null}
+      {qrData ? (
+        <>
+          <QRCode value={qrData} />
+          <p className='copy' onClick={copyUrl}>
+            Copy URL <i class='bi bi-copy'></i>
+          </p>
+        </>
+      ) : null}
     </div>
   );
 }

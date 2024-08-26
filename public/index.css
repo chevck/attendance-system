@@ -164,6 +164,18 @@ button:disabled {
   cursor: pointer;
 }
 
+.ccw-attendance-app .create-barcode p.copy {
+  margin-top: 8px;
+  text-decoration: underline;
+  font-size: 13px;
+  cursor: pointer;
+  color: #5289da;
+}
+
+.ccw-attendance-app .create-barcode p.copy i {
+  margin-left: 4px;
+}
+
 .ccw-attendance-app .ccw-emails h3 {
   font-size: 24px;
   font-weight: 600;
