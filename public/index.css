@@ -266,6 +266,10 @@ button:disabled {
   width: auto !important;
 }
 
+.ccw-attendance-app .date-picker-container .react-datepicker__time-container {
+  width: 100%;
+}
+
 .ccw-attendance-app .date-picker-container input {
   height: 48px;
   border-radius: 0 !important;

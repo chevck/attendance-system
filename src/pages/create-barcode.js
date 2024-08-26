@@ -72,9 +72,12 @@ export function CreateBarCode() {
           <DatePicker
             selected={selectedDate}
             onChange={(date) => setSelectedDate(date)}
-            dateFormat='hh:mm a'
+            timeCaption='Time'
+            dateFormat='h:mm aa'
             placeholderText='Pick time'
             showIcon
+            showTimeSelect
+            showTimeSelectOnly
             includeDates={[new Date()]}
             toggleCalendarOnIconClick
             icon={<CalendarIcon />}
