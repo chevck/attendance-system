@@ -8,8 +8,12 @@ import moment from "moment";
 import FileDownload from "js-file-download";
 import { toast } from "react-toastify";
 import { Loader } from "../components/Loader";
-import { useNavigate } from "react-router-dom";
 import { validateEmail } from "../utils/functions";
+import { PageLoader } from "../components/PageLoader";
+import { AuthModal } from "../components/modals/auth-modal";
+import { AddNewEmailModal } from "../components/modals/add-email.modal";
+import { CreateBarCodeModal } from "../components/modals/create-code.modal";
+import { TagLinesModal } from "../components/modals/taglines.modal";
 
 const PasswordInput = ({ setSeargentCode, seargentCode }) => {
   const [seeCode, setSeeCode] = useState(false);
@@ -72,6 +76,8 @@ const EmailTable = ({ el, key, setSelectedDataToUpdate }) => {
 
 export function Repository() {
   const [selectedDate, setSelectedDate] = useState(null);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [authUser, setAuthUser] = useState(null);
   const [allEmails, setAllEmails] = useState([]);
   const [downloading, setDownloading] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -82,37 +88,49 @@ export function Repository() {
   const [selectedDataToUpdate, setSelectedDataToUpdate] = useState(null);
   const [seargentCode, setSeargentCode] = useState("");
   const [emailToDelete, setEmailToDelete] = useState("");
-  const navigate = useNavigate();
 
   useEffect(() => {
-    handleGetAllCCWMails();
-  }, []);
-
-  useEffect(() => {
-    if (selectedDate) handleGetAttendees();
+    if (!selectedDate) return;
+    handleReturnInvalidAuthUserErr();
+    handleGetAttendees();
     setSearchEmailText("");
   }, [selectedDate]);
 
   useEffect(() => {
+    if (!searchEmailText) return;
+    handleReturnInvalidAuthUserErr();
     handleSearchEmail();
   }, [searchEmailText]);
 
+  useEffect(() => {
+    // open access auth modal on mount
+    document.getElementById("access-auth-modal").click();
+  }, []);
+
+  const closeAccessAuthModal = () =>
+    document.getElementById("close-access-auth-modal").click();
+
   const handleGetAllCCWMails = async () => {
+    setPageLoading(true);
     try {
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/users`
       );
       setAllEmails(data);
+      setPageLoading(false);
+      setLoading(false);
     } catch (error) {
       toast.error(error?.response?.data || "Error getting ccw emails");
     } finally {
       setLoading(false);
+      setPageLoading(false);
     }
   };
 
   const handleGetAttendees = async () => {
     try {
       setLoading(true);
+      setPageLoading(true);
       setAttendants([]);
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/attendance/get-attendees?filterDate=${selectedDate}`
@@ -124,11 +142,14 @@ export function Repository() {
       );
     } finally {
       setLoading(false);
+      setPageLoading(false);
     }
   };
 
   const handleDownloadAttendees = async () => {
+    handleReturnInvalidAuthUserErr();
     try {
+      setPageLoading(true);
       setDownloading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/attendance/download?filterDate=${selectedDate}`,
@@ -147,10 +168,12 @@ export function Repository() {
       );
     } finally {
       setDownloading(false);
+      setPageLoading(false);
     }
   };
 
   const handleDownloadCCWEmails = async () => {
+    handleReturnInvalidAuthUserErr();
     try {
       setDownloading(true);
       const { data } = await axios.get(
@@ -177,6 +200,7 @@ export function Repository() {
   };
 
   const handleUpdateEmail = async () => {
+    handleReturnInvalidAuthUserErr();
     if (!seargentCode)
       return toast.error("You need to give us your code, seargent 😏");
     const { newEmail, email } = selectedDataToUpdate;
@@ -187,7 +211,9 @@ export function Repository() {
     try {
       setActionLoading(true);
       await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/admin/verify?seargentcode=${seargentCode}`
+        `${
+          process.env.REACT_APP_BACKEND_URL
+        }/admin/verify?seargentcode=${seargentCode.toUpperCase()}`
       );
       const { data } = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/users`,
@@ -215,12 +241,15 @@ export function Repository() {
   };
 
   const handleDeleteEmail = async () => {
+    handleReturnInvalidAuthUserErr();
     if (emailToDelete !== selectedDataToUpdate?.email)
       return toast.error("Invalid Email provided!");
     try {
       setActionLoading(true);
       await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/admin/verify?seargentcode=${seargentCode}`
+        `${
+          process.env.REACT_APP_BACKEND_URL
+        }/admin/verify?seargentcode=${seargentCode.toUpperCase()}`
       );
       await axios.delete(
         `${process.env.REACT_APP_BACKEND_URL}/users?email=${emailToDelete}`
@@ -247,301 +276,352 @@ export function Repository() {
     }
   };
 
+  const handleReturnInvalidAuthUserErr = () => {
+    if (!authUser)
+      return toast.error("You are unauthorized to make this request! 🙂");
+  };
+
   return (
-    <div className='repository'>
-      <div className='header'>
-        <div className=''>
-          <h3>CCW Members</h3>
-          {selectedDate ? (
-            <p>
-              Here's a list of people that marked attendance on{" "}
-              {moment(selectedDate).format("Do, MMM YYYY")}
-            </p>
-          ) : (
-            <p>Here's a list of everyone you registered as CCW Members</p>
-          )}
-        </div>
-        <div className='filters'>
-          <button onClick={() => navigate("/create-emails")}>
-            Add New Member
-          </button>
-          <button
-            disabled={downloading}
-            onClick={
-              selectedDate ? handleDownloadAttendees : handleDownloadCCWEmails
-            }
-          >
-            {downloading ? (
-              <Loader />
+    <PageLoader loading={pageLoading}>
+      <div className='repository'>
+        <div className='header'>
+          <div className=''>
+            <h3>CCW Members</h3>
+            {selectedDate ? (
+              <p>
+                Here's a list of people that marked attendance on{" "}
+                {moment(selectedDate).format("Do, MMM YYYY")}
+              </p>
             ) : (
-              <>
-                Export to Excel{" "}
-                <svg
-                  width='20'
-                  height='20'
-                  viewBox='0 0 20 20'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M3.9585 12.292V13.542C3.9585 14.9227 5.07778 16.042 6.4585 16.042H13.5418C14.9225 16.042 16.0418 14.9227 16.0418 13.542V12.292'
-                    stroke='#6B797C'
-                    stroke-width='1.5'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                  />
-                  <path
-                    d='M10 11.8747L10 3.95801'
-                    stroke='#6B797C'
-                    stroke-width='1.5'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                  />
-                  <path
-                    d='M7.2915 8.95801L9.99984 11.8747L12.7082 8.95801'
-                    stroke='#6B797C'
-                    stroke-width='1.5'
-                    stroke-linecap='round'
-                    stroke-linejoin='round'
-                  />
-                </svg>
-              </>
+              <p>Here's a list of everyone you registered as CCW Members</p>
             )}
-          </button>
-          <div className='date-picker-container'>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat='MMM d'
-              placeholderText='Filter attendance'
-              showIcon
-              toggleCalendarOnIconClick
-              icon={<CalendarIcon />}
-              popperPlacement='bottom'
-              maxDate={new Date()}
-            />
           </div>
-          {!selectedDate ? (
-            <input
-              className=''
-              placeholder='Search Email'
-              onChange={({ target: { value } }) => setSearchEmailText(value)}
-              value={searchEmailText}
-            />
-          ) : null}
-        </div>
-      </div>
-      {selectedDate ? (
-        <div className='filters-info'>
-          <p>Now Showing(Attendance)</p>
-          <p onClick={() => setSelectedDate(null)}>Clear Filters</p>
-        </div>
-      ) : null}
-      {selectedDate ? (
-        <div className='_custom-table'>
-          <table>
-            <thead>
-              <th colSpan={5}>Name</th>
-              <th colSpan={5}>Email</th>
-            </thead>
-            <tbody>
-              {!attendants.length && !loading ? (
-                <tr>
-                  <td>No attendees on this day</td>
-                </tr>
-              ) : loading && !attendants.length ? (
-                <tr>
-                  <td>Loading... Please wait</td>
-                </tr>
+          <div className='filters'>
+            <button data-bs-toggle='modal' data-bs-target='#addNewEmailModal'>
+              Add New Member
+            </button>
+            <button data-bs-toggle='modal' data-bs-target='#createBarCodeModal'>
+              Create BarCode
+            </button>
+            <button data-bs-toggle='modal' data-bs-target='#tagLinesModal'>
+              Change Taglines
+            </button>
+            <button
+              disabled={downloading}
+              onClick={
+                selectedDate ? handleDownloadAttendees : handleDownloadCCWEmails
+              }
+            >
+              {downloading ? (
+                <Loader />
               ) : (
-                attendants.map((el, key) => (
-                  <tr key={key}>
-                    <td colSpan={5}>{el.name || "-"}</td>
-                    <td colSpan={5}>{el.email.toLowerCase()}</td>
-                  </tr>
-                ))
+                <>
+                  Export to Excel{" "}
+                  <svg
+                    width='20'
+                    height='20'
+                    viewBox='0 0 20 20'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M3.9585 12.292V13.542C3.9585 14.9227 5.07778 16.042 6.4585 16.042H13.5418C14.9225 16.042 16.0418 14.9227 16.0418 13.542V12.292'
+                      stroke='#6B797C'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                    <path
+                      d='M10 11.8747L10 3.95801'
+                      stroke='#6B797C'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                    <path
+                      d='M7.2915 8.95801L9.99984 11.8747L12.7082 8.95801'
+                      stroke='#6B797C'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                  </svg>
+                </>
               )}
-            </tbody>
-          </table>
+            </button>
+            <div className='date-picker-container'>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat='MMM d'
+                placeholderText='Filter attendance'
+                showIcon
+                toggleCalendarOnIconClick
+                icon={<CalendarIcon />}
+                popperPlacement='bottom'
+                maxDate={new Date()}
+              />
+            </div>
+            {!selectedDate ? (
+              <input
+                className=''
+                placeholder='Search Email'
+                onChange={({ target: { value } }) => setSearchEmailText(value)}
+                value={searchEmailText}
+              />
+            ) : null}
+          </div>
         </div>
-      ) : (
-        <div className='_custom-table'>
-          <table>
-            <thead>
-              <th colSpan={3}>Email Address</th>
-              <th colSpan={3}></th>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td>Loading... Please wait</td>
-                </tr>
-              ) : !allEmails.length && !loading ? (
-                <tr>
-                  <td>No CCW Emails</td>
-                </tr>
-              ) : searchEmailText.length ? (
-                searchEmailResults.length ? (
-                  searchEmailResults.map((el, key) => (
+        {selectedDate ? (
+          <div className='filters-info'>
+            <p>Now Showing(Attendance)</p>
+            <p onClick={() => setSelectedDate(null)}>Clear Filters</p>
+          </div>
+        ) : null}
+        {selectedDate ? (
+          <div className='_custom-table'>
+            <table>
+              <thead>
+                <th colSpan={5}>Name</th>
+                <th colSpan={5}>Email</th>
+              </thead>
+              <tbody>
+                {!attendants.length && !loading ? (
+                  <tr>
+                    <td>No attendees on this day</td>
+                  </tr>
+                ) : loading && !attendants.length ? (
+                  <tr>
+                    <td>Loading... Please wait</td>
+                  </tr>
+                ) : (
+                  attendants.map((el, key) => (
+                    <tr key={key}>
+                      <td colSpan={5}>{el.name || "-"}</td>
+                      <td colSpan={5}>{el.email.toLowerCase()}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className='_custom-table'>
+            <table>
+              <thead>
+                <th colSpan={3}>Email Address</th>
+                <th colSpan={3}></th>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td>Loading... Please wait</td>
+                  </tr>
+                ) : !allEmails.length && !loading ? (
+                  <tr>
+                    <td>No CCW Emails</td>
+                  </tr>
+                ) : searchEmailText.length ? (
+                  searchEmailResults.length ? (
+                    searchEmailResults.map((el, key) => (
+                      <EmailTable
+                        el={el}
+                        key={key}
+                        setSelectedDataToUpdate={setSelectedDataToUpdate}
+                      />
+                    ))
+                  ) : (
+                    <tr>
+                      <td>No Emails matching your search term</td>
+                    </tr>
+                  )
+                ) : (
+                  allEmails.map((el, key) => (
                     <EmailTable
                       el={el}
                       key={key}
                       setSelectedDataToUpdate={setSelectedDataToUpdate}
                     />
                   ))
-                ) : (
-                  <tr>
-                    <td>No Emails matching your search term</td>
-                  </tr>
-                )
-              ) : (
-                allEmails.map((el, key) => (
-                  <EmailTable
-                    el={el}
-                    key={key}
-                    setSelectedDataToUpdate={setSelectedDataToUpdate}
-                  />
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Update User Modal Begins */}
-      <div
-        class='modal fade'
-        id='updateEmailModal'
-        tabindex='-1'
-        aria-labelledby='exampleModalLabel'
-        aria-hidden='true'
-      >
-        <div class='modal-dialog'>
-          <div class='modal-content'>
-            <div class='modal-header'>
-              <h1 class='modal-title fs-5' id='exampleModalLabel'>
-                Update User Email
-              </h1>
-              <button
-                type='button'
-                class='btn-close'
-                data-bs-dismiss='modal'
-                id='update-email-close-modal'
-                aria-label='Close'
-              ></button>
-            </div>
-            <div class='modal-body'>
-              <label>Email Address</label>
-              <input
-                value={selectedDataToUpdate?.newEmail}
-                onChange={({ target: { value } }) =>
-                  setSelectedDataToUpdate({
-                    ...selectedDataToUpdate,
-                    newEmail: value,
-                  })
-                }
-              />
-              <br />
-              <label>
-                <i>
-                  To complete this action, you need to provide your seargent
-                  code below
-                </i>
-              </label>
-              <PasswordInput
-                seargentCode={seargentCode}
-                setSeargentCode={setSeargentCode}
-              />
-            </div>
-            <div class='modal-footer'>
-              <button
-                type='button'
-                className='btn btn-secondary close'
-                data-bs-dismiss='modal'
-              >
-                Close
-              </button>
-              <button
-                type='button'
-                className='btn btn-primary save'
-                disabled={seargentCode.length !== 4 || actionLoading}
-                onClick={handleUpdateEmail}
-              >
-                {actionLoading ? <Loader /> : "Save changes"}
-              </button>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {/* Static Modal Button Trigger */}
+        <button
+          type='button'
+          class='btn btn-primary'
+          data-bs-toggle='modal'
+          data-bs-target='#staticBackdrop'
+          id='access-auth-modal'
+          style={{ display: "none" }}
+        >
+          Launch static backdrop modal
+        </button>
+        {/* Static Modal Button Trigger  -- ends */}
+        {/* Update User Modal Begins */}
+        <div
+          class='modal fade'
+          id='updateEmailModal'
+          tabindex='-1'
+          aria-labelledby='exampleModalLabel'
+          aria-hidden='true'
+        >
+          <div class='modal-dialog'>
+            <div class='modal-content'>
+              <div class='modal-header'>
+                <h1 class='modal-title fs-5' id='exampleModalLabel'>
+                  Update User Email
+                </h1>
+                <button
+                  type='button'
+                  class='btn-close'
+                  data-bs-dismiss='modal'
+                  id='update-email-close-modal'
+                  aria-label='Close'
+                ></button>
+              </div>
+              <div class='modal-body'>
+                <label>Email Address</label>
+                <input
+                  value={selectedDataToUpdate?.newEmail}
+                  onChange={({ target: { value } }) =>
+                    setSelectedDataToUpdate({
+                      ...selectedDataToUpdate,
+                      newEmail: value,
+                    })
+                  }
+                />
+                <br />
+                <label>
+                  <i>
+                    To complete this action, you need to provide your seargent
+                    code below
+                  </i>
+                </label>
+                <PasswordInput
+                  seargentCode={seargentCode}
+                  setSeargentCode={setSeargentCode}
+                />
+              </div>
+              <div class='modal-footer'>
+                <button
+                  type='button'
+                  className='btn btn-secondary close'
+                  data-bs-dismiss='modal'
+                >
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary save'
+                  disabled={seargentCode.length !== 4 || actionLoading}
+                  onClick={handleUpdateEmail}
+                >
+                  {actionLoading ? <Loader /> : "Save changes"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      {/* Update User Modal Ednds */}
-
-      {/* Delete User Modal Begins */}
-      <div
-        class='modal fade'
-        id='deleteEmailModal'
-        tabindex='-1'
-        aria-labelledby='exampleModalLabel'
-        aria-hidden='true'
-      >
-        <div class='modal-dialog'>
-          <div class='modal-content'>
-            <div class='modal-header'>
-              <h1 class='modal-title fs-5' id='exampleModalLabel'>
-                Delete User Email
-              </h1>
-              <button
-                type='button'
-                class='btn-close'
-                data-bs-dismiss='modal'
-                id='delete-email-close-modal'
-                aria-label='Close'
-                onClick={() => {
-                  setSeargentCode("");
-                  setSelectedDataToUpdate(null);
-                  setEmailToDelete("");
-                }}
-              ></button>
-            </div>
-            <div class='modal-body'>
-              <label>
-                To confirm this action, input the email{" "}
-                <b>{selectedDataToUpdate?.email}</b> in the box
-              </label>
-              <input
-                value={emailToDelete}
-                onChange={({ target: { value } }) => setEmailToDelete(value)}
-                placeholder='Email to delete'
-              />
-              <br />
-              <label>
-                <i>Put your unique code below, Seargent 🫡</i>
-              </label>
-              <PasswordInput
-                seargentCode={seargentCode}
-                setSeargentCode={setSeargentCode}
-              />
-            </div>
-            <div class='modal-footer'>
-              <button
-                type='button'
-                className='btn btn-secondary close'
-                data-bs-dismiss='modal'
-              >
-                Close
-              </button>
-              <button
-                type='button'
-                className='btn btn-primary save'
-                disabled={seargentCode.length !== 4 || actionLoading}
-                onClick={handleDeleteEmail}
-              >
-                {actionLoading ? <Loader /> : "Delete User"}
-              </button>
+        {/* Update User Modal Ends */}
+        {/* Delete User Modal Begins */}
+        <div
+          class='modal fade'
+          id='deleteEmailModal'
+          tabindex='-1'
+          aria-labelledby='exampleModalLabel'
+          aria-hidden='true'
+        >
+          <div class='modal-dialog'>
+            <div class='modal-content'>
+              <div class='modal-header'>
+                <h1 class='modal-title fs-5' id='exampleModalLabel'>
+                  Delete User Email
+                </h1>
+                <button
+                  type='button'
+                  class='btn-close'
+                  data-bs-dismiss='modal'
+                  id='delete-email-close-modal'
+                  aria-label='Close'
+                  onClick={() => {
+                    setSeargentCode("");
+                    setSelectedDataToUpdate(null);
+                    setEmailToDelete("");
+                  }}
+                ></button>
+              </div>
+              <div class='modal-body'>
+                <label>
+                  To confirm this action, input the email{" "}
+                  <b>{selectedDataToUpdate?.email}</b> in the box
+                </label>
+                <input
+                  value={emailToDelete}
+                  onChange={({ target: { value } }) => setEmailToDelete(value)}
+                  placeholder='Email to delete'
+                />
+                <br />
+                <label>
+                  <i>Put your unique code below, Seargent 🫡</i>
+                </label>
+                <PasswordInput
+                  seargentCode={seargentCode}
+                  setSeargentCode={setSeargentCode}
+                />
+              </div>
+              <div class='modal-footer'>
+                <button
+                  type='button'
+                  className='btn btn-secondary close'
+                  data-bs-dismiss='modal'
+                >
+                  Close
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-primary save'
+                  disabled={seargentCode.length !== 4 || actionLoading}
+                  onClick={handleDeleteEmail}
+                >
+                  {actionLoading ? <Loader /> : "Delete User"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        {/* Delete User Modal Ends */}
+        {/* Access Auth Modal Starts */}
+        <AuthModal
+          setAuthUser={setAuthUser}
+          closeAccessAuthModal={closeAccessAuthModal}
+          handleGetAllCCWMails={handleGetAllCCWMails}
+          setPageLoading={setPageLoading}
+        />
+        {/* Access Auth Modal Ends */}
+
+        {/* Add New email modal starts */}
+        <AddNewEmailModal
+          handleReturnInvalidAuthUserErr={handleReturnInvalidAuthUserErr}
+          authUser={authUser}
+        />
+        {/* Add New email modal ends */}
+
+        {/* Create Barcode Modal starts */}
+        <CreateBarCodeModal
+          handleReturnInvalidAuthUserErr={handleReturnInvalidAuthUserErr}
+        />
+        {/* Create Barcode Modal ends */}
+
+        {/* Create Barcode Modal starts */}
+        <TagLinesModal
+          handleReturnInvalidAuthUserErr={handleReturnInvalidAuthUserErr}
+          authUser={authUser}
+        />
+        {/* Create Barcode Modal ends */}
       </div>
-      {/* Delete User Modal Ednds */}
-    </div>
+    </PageLoader>
   );
 }

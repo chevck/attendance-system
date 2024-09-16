@@ -5,6 +5,7 @@ import { validateEmail } from "../utils/functions";
 import { toast } from "react-toastify";
 import { Loader } from "../components/Loader";
 import axios from "axios";
+import { PageLoader } from "../components/PageLoader";
 
 export function MarkAttendance() {
   const params = new URLSearchParams(window.location.search);
@@ -12,6 +13,8 @@ export function MarkAttendance() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [taglines, setTaglines] = useState({ maintext: "", subtext: "" });
 
   useEffect(() => {
     handleCheckExpiryDate();
@@ -32,6 +35,25 @@ export function MarkAttendance() {
     setLinkInExpired(isExpired);
     if (isExpired) {
       return toast.error("Attendance has closed for today!");
+    }
+    handleGetLatestTagline();
+  };
+
+  const handleGetLatestTagline = async () => {
+    setPageLoading(true);
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/taglines/latest`
+      );
+      setTaglines({ maintext: data.mainText, subtext: data.supportingText });
+      setPageLoading(false);
+    } catch (error) {
+      setPageLoading(false);
+      console.log({ error });
+      setTaglines({
+        maintext: "So glad you made it! 🤗",
+        subtext: "Let's get it recorded, shall we?",
+      });
     }
   };
 
@@ -59,30 +81,32 @@ export function MarkAttendance() {
   };
 
   return (
-    <div className='attendance-container'>
-      <h4>So glad you made it! 🤗</h4>
-      <h6>Let's get it recorded, shall we?</h6>
-      <input
-        className='form-control'
-        placeholder='Your First Name'
-        onChange={({ target: { value } }) => setName(value)}
-        value={name}
-        disabled={loading || linkIsExpired}
-      />
-      <input
-        className='form-control'
-        placeholder='email@email.com'
-        onChange={({ target: { value } }) => setEmail(value)}
-        value={email}
-        disabled={loading || linkIsExpired}
-      />
-      <button
-        className='ccw-btn'
-        disabled={loading || linkIsExpired}
-        onClick={handleMarkAttendance}
-      >
-        {loading ? <Loader /> : "Mark Attendance"}
-      </button>
-    </div>
+    <PageLoader loading={pageLoading}>
+      <div className='attendance-container'>
+        <h4>{taglines.maintext}</h4>
+        <h6>{taglines.subtext}</h6>
+        <input
+          className='form-control'
+          placeholder='Your First Name'
+          onChange={({ target: { value } }) => setName(value)}
+          value={name}
+          disabled={loading || linkIsExpired}
+        />
+        <input
+          className='form-control'
+          placeholder='email@email.com'
+          onChange={({ target: { value } }) => setEmail(value)}
+          value={email}
+          disabled={loading || linkIsExpired}
+        />
+        <button
+          className='ccw-btn'
+          disabled={loading || linkIsExpired}
+          onClick={handleMarkAttendance}
+        >
+          {loading ? <Loader /> : "Mark Attendance"}
+        </button>
+      </div>
+    </PageLoader>
   );
 }
