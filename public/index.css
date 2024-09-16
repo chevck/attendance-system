@@ -435,7 +435,6 @@ button:disabled {
 .access-auth-modal.modal-dialog {
   height: 100vh;
   display: flex;
-  align-items: center;
 }
 
 .access-auth-modal .modal-title {

@@ -49,12 +49,6 @@ export function AuthModal({
             <h1 class='modal-title fs-5' id='staticBackdropLabel'>
               Welcome CCW Admin (?) 👀
             </h1>
-            <button
-              type='button'
-              class='btn-close'
-              data-bs-dismiss='modal'
-              aria-label='Close'
-            ></button>
           </div>
           <div class='modal-body'>
             <h3>Confirm Identity.</h3>
