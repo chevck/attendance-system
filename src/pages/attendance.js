@@ -14,7 +14,11 @@ export function MarkAttendance() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
-  const [taglines, setTaglines] = useState({ maintext: "", subtext: "" });
+  const [taglines, setTaglines] = useState({
+    maintext: "",
+    subtext: "",
+    successMessage: "",
+  });
 
   useEffect(() => {
     handleCheckExpiryDate();
@@ -23,7 +27,6 @@ export function MarkAttendance() {
 
   const handleCheckExpiryDate = () => {
     const expiryDate = params.get("expiryDate");
-    console.log({ expiryDate });
     const decodedExpiryDate = decode(expiryDate);
     if (!decodedExpiryDate) {
       setLinkInExpired(true);
@@ -45,7 +48,11 @@ export function MarkAttendance() {
       const { data } = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/taglines/latest`
       );
-      setTaglines({ maintext: data.mainText, subtext: data.supportingText });
+      setTaglines({
+        maintext: data.mainText,
+        subtext: data.supportingText,
+        successMessage: data.successMessage,
+      });
       setPageLoading(false);
     } catch (error) {
       setPageLoading(false);
@@ -53,6 +60,7 @@ export function MarkAttendance() {
       setTaglines({
         maintext: "So glad you made it! 🤗",
         subtext: "Let's get it recorded, shall we?",
+        successMessage: "You are doing well, **name**",
       });
     }
   };
@@ -68,7 +76,8 @@ export function MarkAttendance() {
         email: email.toLowerCase(),
         name,
       });
-      toast.success(`You are doing well 👏🏽, ${name}`);
+      // toast.success(`You are doing well 👏🏽, ${name}`);
+      toast.success(taglines.successMessage.replace("**name**", name));
       setLinkInExpired(true);
       setEmail("");
       setName("");

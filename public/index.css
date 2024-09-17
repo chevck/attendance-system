@@ -514,6 +514,17 @@ button:disabled {
   font-size: 14px;
 }
 
+.tagline-modal .modal-body div p {
+  font-size: 12px;
+  font-weight: 200;
+  color: #878383;
+  margin-top: 2px;
+}
+
+.tagline-modal .modal-body div p b {
+  color: #151010;
+}
+
 /* page loader  */
 
 /* HTML: <div class="loader"></div> */

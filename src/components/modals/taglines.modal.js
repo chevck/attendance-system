@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { Loader } from "../Loader";
 
 export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
   const [mainText, setMainText] = useState("");
   const [subText, setSubText] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSaveTagLine = async () => {
@@ -16,6 +18,7 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
         {
           mainText,
           supportingText: subText,
+          successMessage,
         },
         { headers: { seargentcode: authUser.seargentcode } }
       );
@@ -75,6 +78,18 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
                   value={subText}
                 />
               </div>
+              <div className=''>
+                <label>Success Message</label>
+                <input
+                  placeholder='Enter Success Message'
+                  onChange={({ target: { value } }) => setSuccessMessage(value)}
+                  value={successMessage}
+                />
+                <p>
+                  We ask that you save the name placeholder as <b>**name**</b>{" "}
+                  e.g <b>Thank you, **name**</b>
+                </p>
+              </div>
             </div>
             <div class='modal-footer'>
               <button
@@ -87,10 +102,15 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
               <button
                 type='button'
                 class='btn btn-primary ccw-btn'
-                disabled={loading || mainText.length < 5 || subText.length < 5}
+                disabled={
+                  loading ||
+                  mainText.length < 5 ||
+                  subText.length < 5 ||
+                  successMessage.length < 5
+                }
                 onClick={handleSaveTagLine}
               >
-                Save changes
+                {loading ? <Loader /> : "Save Changes..."}
               </button>
             </div>
           </div>
