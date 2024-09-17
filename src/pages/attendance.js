@@ -77,7 +77,9 @@ export function MarkAttendance() {
         name,
       });
       // toast.success(`You are doing well 👏🏽, ${name}`);
-      toast.success(taglines.successMessage.replace("**name**", name));
+      toast.success(
+        taglines.successMessage.replace("**name**", name.split(" ")[0].trim())
+      );
       setLinkInExpired(true);
       setEmail("");
       setName("");
