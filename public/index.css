@@ -639,3 +639,9 @@ button:disabled {
     margin-right: 0;
   }
 }
+
+@media screen and (min-width: 1440px) {
+  .access-auth-modal.modal-dialog .modal-content {
+    height: fit-content;
+  }
+}

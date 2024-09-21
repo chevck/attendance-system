@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Loader } from "../Loader";
 
@@ -8,6 +8,31 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
   const [subText, setSubText] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [disableBtn, setDisableBtn] = useState(false);
+
+  useEffect(() => {
+    if (!authUser) return;
+    handleGetLatestTagLine();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser]);
+
+  const handleGetLatestTagLine = async () => {
+    handleReturnInvalidAuthUserErr();
+    console.log("getting latest tag line");
+    try {
+      const {
+        data: { mainText, supportingText, successMessage },
+      } = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/taglines/latest`
+      );
+      setMainText(mainText);
+      setSubText(supportingText);
+      setSuccessMessage(successMessage);
+      setDisableBtn(true);
+    } catch (error) {
+      console.log("errorr", error);
+    }
+  };
 
   const handleSaveTagLine = async () => {
     handleReturnInvalidAuthUserErr();
@@ -66,7 +91,10 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
                 <label>Main Tagline</label>
                 <input
                   placeholder='Enter Main Tagline'
-                  onChange={({ target: { value } }) => setMainText(value)}
+                  onChange={({ target: { value } }) => {
+                    setMainText(value);
+                    if (disableBtn) setDisableBtn(false);
+                  }}
                   value={mainText}
                 />
               </div>
@@ -74,7 +102,10 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
                 <label>Supporting text</label>
                 <input
                   placeholder='Enter supporting text'
-                  onChange={({ target: { value } }) => setSubText(value)}
+                  onChange={({ target: { value } }) => {
+                    setSubText(value);
+                    if (disableBtn) setDisableBtn(false);
+                  }}
                   value={subText}
                 />
               </div>
@@ -82,7 +113,10 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
                 <label>Success Message</label>
                 <input
                   placeholder='Enter Success Message'
-                  onChange={({ target: { value } }) => setSuccessMessage(value)}
+                  onChange={({ target: { value } }) => {
+                    setSuccessMessage(value);
+                    if (disableBtn) setDisableBtn(false);
+                  }}
                   value={successMessage}
                 />
                 <p>
@@ -106,7 +140,8 @@ export function TagLinesModal({ handleReturnInvalidAuthUserErr, authUser }) {
                   loading ||
                   mainText.length < 5 ||
                   subText.length < 5 ||
-                  successMessage.length < 5
+                  successMessage.length < 5 ||
+                  disableBtn
                 }
                 onClick={handleSaveTagLine}
               >
