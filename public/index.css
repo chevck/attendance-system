@@ -435,6 +435,7 @@ button:disabled {
 .access-auth-modal.modal-dialog {
   height: 100vh;
   display: flex;
+  padding: 15px;
 }
 
 .access-auth-modal .modal-title {
@@ -637,6 +638,10 @@ button:disabled {
     td.actions
     span:nth-child(2) {
     margin-right: 0;
+  }
+
+  .access-auth-modal.modal-dialog .modal-content {
+    margin: auto;
   }
 }
 

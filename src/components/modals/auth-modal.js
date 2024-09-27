@@ -47,7 +47,7 @@ export function AuthModal({
         <div class='modal-content'>
           <div class='modal-header'>
             <h1 class='modal-title fs-5' id='staticBackdropLabel'>
-              Welcome CCW Admin (?) 👀
+              Welcome Admin (?) 👀
             </h1>
           </div>
           <div class='modal-body'>
