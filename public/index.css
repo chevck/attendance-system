@@ -4,6 +4,7 @@
   --button-text-color: #5d6a6e;
   --td-bg: #f5f5f5;
   --modal-button-bg-color: #5d6a6e;
+  --modal-bg-color: #fff;
   --input-bg-color: #fff;
   --input-text-color: #2d2d2d;
 }
@@ -680,12 +681,11 @@ button:disabled {
 
   .access-auth-modal.modal-dialog .modal-content {
     margin: auto;
-    background-color: var(--background-color);
   }
 }
 
 .modal-content {
-  background-color: var(--background-color);
+  background-color: var(--modal-bg-color);
 }
 
 .modal-content button {
