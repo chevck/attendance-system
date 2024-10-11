@@ -89,6 +89,43 @@ export function Repository() {
   const [seargentCode, setSeargentCode] = useState("");
   const [emailToDelete, setEmailToDelete] = useState("");
 
+  // Helper function to get the current system theme
+  const getSystemTheme = () => {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+
+  // State to store the current theme (dark or light)
+  const [theme, setTheme] = useState(getSystemTheme());
+
+  useEffect(() => {
+    // Function to handle theme change
+    const handleThemeChange = (e) => {
+      setTheme(e.matches ? "dark" : "light");
+    };
+
+    // Create a media query list for `prefers-color-scheme`
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    // Check for initial theme value
+    setTheme(mediaQuery.matches ? "dark" : "light");
+
+    // Add listener to detect changes in system theme
+    mediaQuery.addEventListener("change", handleThemeChange);
+
+    // Cleanup the listener when the component unmounts
+    return () => {
+      mediaQuery.removeEventListener("change", handleThemeChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  console.log({ theme });
+
   useEffect(() => {
     if (!selectedDate) return;
     handleReturnInvalidAuthUserErr();
