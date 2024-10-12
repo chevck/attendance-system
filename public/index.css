@@ -82,8 +82,10 @@ button.ccw-btn {
   height: 44px;
   /* background: #047857 !important; */
   margin-top: 16px !important;
+  border: none;
   color: white !important;
   border-radius: 4px !important;
+  background-color: var(--modal-button-bg-color);
 }
 
 button.ccw-btn.close {
@@ -135,6 +137,7 @@ button:disabled {
   height: 100vh;
   flex-flow: column;
   justify-content: center;
+  background-color: var(--background-color);
 }
 
 .ccw-attendance-app .create-barcode h4 {
